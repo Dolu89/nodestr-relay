@@ -18,6 +18,4 @@
 |
 */
 
-import Route from '@ioc:Adonis/Core/Route'
-
-Route.post('/save_event', 'EventsController.saveEvent')
+// import Route from '@ioc:Adonis/Core/Route'

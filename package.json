@@ -1,7 +1,6 @@
 {
-  "name": "nostr-relay-js",
-  "version": "1.0.0",
-  "private": true,
+  "name": "nodestr-relay",
+  "version": "0.0.0",
   "scripts": {
     "build": "node ace build --production",
     "start": "node server.js",
@@ -11,6 +10,7 @@
   },
   "devDependencies": {
     "@adonisjs/assembler": "^3.0.0",
+    "@types/ws": "^7.4.0",
     "adonis-preset-ts": "^1.1.0",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
@@ -24,9 +24,13 @@
   },
   "dependencies": {
     "@adonisjs/core": "^5.0.4-preview-rc",
+    "@adonisjs/lucid": "^10.0.0",
     "@adonisjs/repl": "^1.0.0",
+    "noble-secp256k1": "^1.1.1",
+    "pg": "^8.5.1",
     "proxy-addr": "^2.0.6",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "ws": "^7.4.2"
   }
 }
