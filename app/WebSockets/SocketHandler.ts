@@ -89,7 +89,6 @@ const subKey = (pubKey: string, ws: ws) => {
   } else {
     subscriptionBack.set(pubKey, [ws])
   }
-  ws.send(pubKey)
 }
 
 const unsubKey = (pubKey: string, ws) => {

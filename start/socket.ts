@@ -1,14 +1,33 @@
-import ws from 'ws'
+import ws from 'App/WebSockets/CustomWs'
 import Server from '@ioc:Adonis/Core/Server'
 import { handle } from 'App/WebSockets/SocketHandler'
 
 /**
  * Pass AdonisJS http server instance to ws.
  */
-const wss: ws.Server = new ws.Server({ server: Server.instance! })
+const wss = new ws.Server({ server: Server.instance! })
+
+function noop() {}
+
 wss.on('connection', (ws: ws) => {
+  ws.isAlive = true
+  ws.on('pong', () => (ws.isAlive = true))
+
   ws.on('message', (message: string) => {
     // log the received message and send it back to the client
     handle(message, ws)
   })
+})
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws: ws) {
+    if (ws.isAlive === false) return ws.terminate()
+    console.log('PING')
+    ws.isAlive = false
+    ws.ping(noop())
+  })
+}, 5000)
+
+wss.on('close', function close() {
+  clearInterval(interval)
 })
