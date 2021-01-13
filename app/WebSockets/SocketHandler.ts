@@ -40,7 +40,9 @@ const saveEvent = async (message: string) => {
   await Event.create(event)
 
   // Send the new post to all subscribers
-  const wsToEmit: ws[] = subscriptionBack.get(event.pubkey)!
+  const wsToEmit: ws[] = subscriptionBack.has(event.pubkey)
+    ? subscriptionBack.get(event.pubkey)!
+    : []
   for (const ws of wsToEmit) {
     ws.send(JSON.stringify([event, 'n']))
   }
@@ -76,7 +78,6 @@ let subscription: Map<ws, string[]> = new Map()
 let subscriptionBack: Map<string, ws[]> = new Map()
 
 const subKey = (pubKey: string, ws: ws) => {
-  console.log('SUB KEY')
   const currentKeys: string[] = subscription.has(ws) ? subscription.get(ws)! : []
   if (!currentKeys.find((c) => pubKey === c)) {
     subscription.set(ws, [...currentKeys, pubKey])
@@ -92,8 +93,6 @@ const subKey = (pubKey: string, ws: ws) => {
 }
 
 const unsubKey = (pubKey: string, ws) => {
-  console.log('UNSUB KEY')
-
   const currentKeys: string[] = subscription.has(ws) ? subscription.get(ws)! : []
   subscription.set(ws, [...currentKeys.filter((c) => pubKey !== c)])
   ws.send(pubKey)
