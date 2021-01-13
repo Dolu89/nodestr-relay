@@ -38,10 +38,14 @@ PG_USER=admin
 PG_PASSWORD=admin
 PG_DB_NAME=nostr
 ``` 
-3. Launch
+3. DB migration
+```
+node ace migration:run
+```
+4. Launch
 ``` bash
 yarn dev
 ```
-4. Profit!
+5. Profit!
 
 `ws://localhost:3333/ws`
