@@ -26,7 +26,7 @@ const interval = setInterval(function ping() {
     ws.isAlive = false
     ws.ping(noop())
   })
-}, 5000)
+}, 30000)
 
 wss.on('close', function close() {
   clearInterval(interval)
