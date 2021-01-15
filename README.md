@@ -11,8 +11,11 @@ Please refer to the official [NIPs](https://github.com/fiatjaf/nostr/tree/master
 	 - [x] unsub-key
 	 - [x] req-feed
 	 - [ ] req-event
-	 - [ ] req-key
-	 - [ ] event (publish) **WIP**
+	 - [x] req-key
+	 - [ ] event (publish)
+    	 - [x] set_metadata
+    	 - [x] text_note
+    	 - [ ] recommend_server
 - [ ] NIP 02
 - [ ] NIP 03
 

@@ -22,7 +22,6 @@ wss.on('connection', (ws: ws) => {
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws: ws) {
     if (ws.isAlive === false) return ws.terminate()
-    console.log('PING')
     ws.isAlive = false
     ws.ping(noop())
   })
