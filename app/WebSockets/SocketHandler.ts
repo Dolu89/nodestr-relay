@@ -10,7 +10,7 @@ import {
   serializeEvent,
   ContextEnum,
 } from 'App/WebSockets/RelayUtils'
-import { setMetadata } from './EventHandler'
+import { recommendServer, setMetadata } from './EventHandler'
 
 let SUBSCRIPTION: Map<ws, string[]> = new Map()
 let SUBSCRIPTION_BACK: Map<string, ws[]> = new Map()
@@ -63,7 +63,8 @@ const saveEvent = async (message: string, ws: ws) => {
       wsToEmit.send(JSON.stringify([event, ContextEnum.subKey]))
     }
   } else if (event.kind === KindEnum.recommend_server) {
-    //TODO recommend_server
+    await recommendServer(event)
+    ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else {
     ws.send(FormatNotice('Incorrect value : `kind`'))
   }

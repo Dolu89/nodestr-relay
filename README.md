@@ -12,10 +12,10 @@ Please refer to the official [NIPs](https://github.com/fiatjaf/nostr/tree/master
 	 - [x] req-feed
 	 - [ ] req-event
 	 - [x] req-key
-	 - [ ] event (publish)
+	 - [x] event (publish)
     	 - [x] set_metadata
     	 - [x] text_note
-    	 - [ ] recommend_server
+    	 - [x] recommend_server
 - [ ] NIP 02
 - [ ] NIP 03
 

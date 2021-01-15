@@ -19,13 +19,25 @@ export const setMetadata = async (event: Event) => {
   }
 }
 
-export const getNewMetadataObject = (
-  oldMetadata: MetadataInterface,
-  newMetadata: MetadataInterface
-) => {
+const getNewMetadataObject = (oldMetadata: MetadataInterface, newMetadata: MetadataInterface) => {
   return {
     about: newMetadata.about ?? oldMetadata.about,
     name: newMetadata.name ?? oldMetadata.name,
     picture: newMetadata.picture ?? oldMetadata.picture,
+  }
+}
+
+export const recommendServer = async (event: Event) => {
+  let recommendServer = await Event.query()
+    .where('pubkey', event.pubkey)
+    .where('kind', KindEnum.recommend_server)
+    .orderBy('createdAt', 'desc')
+    .first()
+
+  if (recommendServer !== null) {
+    recommendServer.content = event.content
+    await recommendServer.save()
+  } else {
+    await Event.create(event)
   }
 }

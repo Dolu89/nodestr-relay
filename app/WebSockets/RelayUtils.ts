@@ -10,7 +10,7 @@ export interface MetadataInterface {
 export enum KindEnum {
   set_metadata = 0,
   text_note = 1,
-  recommend_server = 3,
+  recommend_server = 2,
 }
 
 export enum ContextEnum {
@@ -33,7 +33,7 @@ export const serializeEvent = (event: Event) => {
   ])
 }
 
-export const FormatNotice = (message: string) => ['notice', message]
+export const FormatNotice = (message: string) => JSON.stringify(['notice', message])
 export const FormatEvent = (event: Event, context: string) =>
   JSON.stringify([event.serialize(), context])
 
