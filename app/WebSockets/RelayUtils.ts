@@ -21,6 +21,13 @@ export enum ContextEnum {
 }
 
 export const sha256 = (m) => secp256k1.utils.sha256(Uint8Array.from(m))
+export async function getEventHash(event) {
+  let eventHash = await sha256(Buffer.from(serializeEvent(event)))
+  return Buffer.from(eventHash).toString('hex')
+}
+export async function verifySignature(event) {
+  return await secp256k1.schnorr.verify(event.sig, await getEventHash(event), event.pubkey)
+}
 
 export const serializeEvent = (event: Event) => {
   return JSON.stringify([

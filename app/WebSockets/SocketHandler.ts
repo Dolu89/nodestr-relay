@@ -9,6 +9,7 @@ import {
   sha256,
   serializeEvent,
   ContextEnum,
+  verifySignature,
 } from 'App/WebSockets/RelayUtils'
 import { recommendServer, setMetadata } from './EventHandler'
 
@@ -45,15 +46,21 @@ export const handle = (message: string, ws: ws): void => {
 const saveEvent = async (message: string, ws: ws) => {
   const event: Event = JSON.parse(message)
 
+  // Calculate event.id
+  let eventHash = await sha256(Buffer.from(serializeEvent(event)))
+  const eventId = Buffer.from(eventHash).toString('hex')
+  event.id = eventId
+
+  //Verify signature
+  if (!(await verifySignature(event))) {
+    ws.send(FormatNotice('Invalid signature'))
+    return
+  }
+
   if (event.kind === KindEnum.set_metadata) {
     setMetadata(event)
     ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else if (event.kind === KindEnum.text_note) {
-    // Calculate event.id
-    let eventHash = await sha256(Buffer.from(serializeEvent(event)))
-    const eventId = Buffer.from(eventHash).toString('hex')
-    event.id = eventId
-
     await Event.create(event)
     // Send the new post to all subscribers (except yourself)
     const wssToEmit: ws[] = SUBSCRIPTION_BACK.has(event.pubkey)
@@ -66,7 +73,7 @@ const saveEvent = async (message: string, ws: ws) => {
     await recommendServer(event)
     ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else {
-    ws.send(FormatNotice('Incorrect value : `kind`'))
+    ws.send(FormatNotice('Incorrect `kind`'))
   }
 }
 
