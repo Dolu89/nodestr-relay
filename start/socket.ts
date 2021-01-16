@@ -13,9 +13,9 @@ wss.on('connection', (ws: ws) => {
   ws.isAlive = true
   ws.on('pong', () => (ws.isAlive = true))
 
-  ws.on('message', (message: string) => {
+  ws.on('message', async (message: string) => {
     // log the received message and send it back to the client
-    handle(message, ws)
+    await handle(message, ws)
   })
 })
 

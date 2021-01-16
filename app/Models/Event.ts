@@ -12,11 +12,7 @@ export default class Event extends BaseModel {
   @column()
   public kind: number
 
-  @column({
-    serialize: (value?) => {
-      return Array.from(value)
-    },
-  })
+  @column()
   public tags: string
 
   @column()

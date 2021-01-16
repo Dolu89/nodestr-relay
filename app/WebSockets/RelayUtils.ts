@@ -41,8 +41,7 @@ export const serializeEvent = (event: Event) => {
 }
 
 export const FormatNotice = (message: string) => JSON.stringify(['notice', message])
-export const FormatEvent = (event: Event, context: string) =>
-  JSON.stringify([event.serialize(), context])
+export const FormatEvent = (event: Event, context: string) => JSON.stringify([event, context])
 
 export const GetFeedOffset = (offset: number) => {
   if (!offset || offset < 0) {
@@ -53,7 +52,7 @@ export const GetFeedOffset = (offset: number) => {
 
 export const GetFeedLimit = (limit: number) => {
   const hardLimit = 50
-  if (!limit || limit <= 0) {
+  if (!limit || limit <= 0 || limit > 100) {
     limit = hardLimit
   }
   return limit

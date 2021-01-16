@@ -6,11 +6,11 @@
 
 Please refer to the official [NIPs](https://github.com/fiatjaf/nostr/tree/master/nips) repo
 
-- [ ] NIP 01
+- [x] NIP 01
 	 - [x] sub-key
 	 - [x] unsub-key
 	 - [x] req-feed
-	 - [ ] req-event
+	 - [x] req-event
 	 - [x] req-key
 	 - [x] event (publish)
     	 - [x] set_metadata

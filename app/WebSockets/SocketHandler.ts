@@ -12,14 +12,15 @@ import {
   verifySignature,
 } from 'App/WebSockets/RelayUtils'
 import { recommendServer, setMetadata } from './EventHandler'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 let SUBSCRIPTION: Map<ws, string[]> = new Map()
 let SUBSCRIPTION_BACK: Map<string, ws[]> = new Map()
 
-export const handle = (message: string, ws: ws): void => {
+export const handle = async (message: string, ws: ws) => {
   // If it starts with { it's an event to push
   if (message.startsWith('{')) {
-    saveEvent(message, ws)
+    await saveEvent(message, ws)
     return
   }
 
@@ -35,7 +36,7 @@ export const handle = (message: string, ws: ws): void => {
       reqFeed(value, ws)
       break
     case 'req-event':
-      // TODO
+      reqEvent(value, ws)
       break
     case 'req-key':
       reqKey(value, ws)
@@ -61,6 +62,7 @@ const saveEvent = async (message: string, ws: ws) => {
     setMetadata(event)
     ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else if (event.kind === KindEnum.text_note) {
+    event.tags = JSON.stringify(event.tags)
     await Event.create(event)
     // Send the new post to all subscribers (except yourself)
     const wssToEmit: ws[] = SUBSCRIPTION_BACK.has(event.pubkey)
@@ -125,6 +127,50 @@ const reqFeed = async (message: string, ws: ws) => {
     .orderBy('createdAt', 'desc')
   for (const event of events) {
     ws.send(JSON.stringify([event.serialize(), ContextEnum.reqFeed]))
+  }
+}
+
+const reqEvent = async (message: string, ws: ws) => {
+  const body: { id: string; limit: number } = JSON.parse(message)
+  if (body.id === null) {
+    ws.send(FormatNotice('`id` must be provided'))
+    return
+  }
+  let limit = GetFeedLimit(body.limit)
+
+  const event = await Event.query()
+    .where('id', body.id)
+    .limit(limit)
+    .orderBy('createdAt', 'desc')
+    .first()
+
+  if (event === null) {
+    ws.send(FormatNotice('Event not found'))
+    return
+  }
+
+  ws.send(FormatEvent(event, ContextEnum.reqEvent))
+
+  const relatedEvents = await Database.rawQuery(
+    `
+    WITH 
+    A AS (
+      SELECT * ,jsonb_array_elements(tags) AS tag
+      FROM events
+    )
+    SELECT id, pubkey, kind, tags, content, sig, created_at
+    FROM A
+    WHERE (tag->>0) = 'e'
+    AND (tag->>1) = ?
+    LIMIT ?;
+    `,
+    [event.id, limit]
+  )
+
+  if (relatedEvents.rows.length > 0) {
+    for (const relatedEvent of relatedEvents.rows) {
+      ws.send(FormatEvent(relatedEvent, ContextEnum.reqEvent))
+    }
   }
 }
 
