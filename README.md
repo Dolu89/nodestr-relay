@@ -27,13 +27,14 @@ Please refer to the official [NIPs](https://github.com/fiatjaf/nostr/tree/master
 git clone https://github.com/Dolu89/nodestr-relay.git
 cd nodestr-relay
 yarn
+node ace generate:key
 ```
 2. Create .env file
 ```
 PORT=3333
 HOST=0.0.0.0
 NODE_ENV=development
-APP_KEY=YourSecretKey
+APP_KEY=YourSecretKey  # result of 'node ace generate:key'
 DB_CONNECTION=pg
 PG_HOST=localhost
 PG_PORT=5432
