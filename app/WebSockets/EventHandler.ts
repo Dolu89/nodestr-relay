@@ -14,8 +14,6 @@ export const setMetadata = async (event: Event) => {
     const currentMetadata: MetadataInterface = JSON.parse(metadataEvent.content)
     metadataEvent.content = JSON.stringify(getNewMetadataObject(currentMetadata, eventMetadata))
     await metadataEvent.save()
-  } else {
-    await Event.create(event)
   }
 }
 
@@ -37,7 +35,5 @@ export const recommendServer = async (event: Event) => {
   if (recommendServer !== null) {
     recommendServer.content = event.content
     await recommendServer.save()
-  } else {
-    await Event.create(event)
   }
 }

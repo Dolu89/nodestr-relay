@@ -59,26 +59,22 @@ const saveEvent = async (message: string, ws: ws) => {
   }
 
   if (event.kind === KindEnum.set_metadata) {
-    setMetadata(event)
-    ws.send(JSON.stringify([event, ContextEnum.subKey]))
+    await setMetadata(event)
   } else if (event.kind === KindEnum.text_note) {
-    event.tags = JSON.stringify(event.tags)
     await Event.create(event)
-    // Send the new post to all subscribers (except yourself)
-    const wssToEmit: ws[] = SUBSCRIPTION_BACK.has(event.pubkey)
-      ? SUBSCRIPTION_BACK.get(event.pubkey)!
-      : []
-    for (const wsToEmit of wssToEmit) {
-      wsToEmit.send(JSON.stringify([event, ContextEnum.subKey]))
-    }
   } else if (event.kind === KindEnum.recommend_server) {
     await recommendServer(event)
-    ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else {
     // Handle all kinds blindly (eg. NIP04)
-    event.tags = JSON.stringify(event.tags)
     await Event.create(event)
-    ws.send(FormatEvent(event, ContextEnum.subKey))
+  }
+
+  // Send event all subscribers (including yourself)
+  const wssToEmit: ws[] = SUBSCRIPTION_BACK.has(event.pubkey)
+    ? SUBSCRIPTION_BACK.get(event.pubkey)!
+    : []
+  for (const wsToEmit of wssToEmit) {
+    wsToEmit.send(FormatEvent(event, ContextEnum.subKey))
   }
 }
 
@@ -156,7 +152,7 @@ const reqEvent = async (message: string, ws: ws) => {
 
   const relatedEvents = await Database.rawQuery(
     `
-    WITH 
+    WITH
     A AS (
       SELECT * ,jsonb_array_elements(tags) AS tag
       FROM events

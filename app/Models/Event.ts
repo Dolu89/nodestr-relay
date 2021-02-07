@@ -1,4 +1,4 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Event extends BaseModel {
   public static selfAssignPrimaryKey = true
@@ -23,4 +23,9 @@ export default class Event extends BaseModel {
 
   @column()
   public createdAt: number
+
+  @beforeSave()
+  public static async stringifyTags(event: Event) {
+    event.tags = JSON.stringify(event.tags)
+  }
 }
