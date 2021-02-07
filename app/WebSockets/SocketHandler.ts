@@ -75,7 +75,10 @@ const saveEvent = async (message: string, ws: ws) => {
     await recommendServer(event)
     ws.send(JSON.stringify([event, ContextEnum.subKey]))
   } else {
-    ws.send(FormatNotice('Incorrect `kind`'))
+    // Handle all kinds blindly (eg. NIP04)
+    event.tags = JSON.stringify(event.tags)
+    await Event.create(event)
+    ws.send(FormatEvent(event, ContextEnum.subKey))
   }
 }
 
