@@ -1,6 +1,6 @@
-# Nodestr Relay - A [nostr](https://github.com/fiatjaf/nostr) implementation in Node.js
+⚠️ READ-ONLY. Please check https://github.com/Cameri/nostr-ts-relay for another Nostr relay written in TS.
 
-⚠️ Nodestr is still in development
+# Nodestr Relay - A [nostr](https://github.com/fiatjaf/nostr) implementation in Node.js
 
 ---
 
